@@ -48,5 +48,10 @@ namespace UISample
         {
             this.InitializeComponent();
         }
+
+        private void MediaPageButton_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(MediaPageShared));
+        }
     }
 }

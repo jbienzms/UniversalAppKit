@@ -8,6 +8,22 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="50*"/>
+                <ColumnDefinition Width="25*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25*"/>
+                <RowDefinition Height="50*"/>
+                <RowDefinition Height="25*"/>
+            </Grid.RowDefinitions>
+            <Viewbox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Width="120" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Button x:Name="MediaPageButton" Content="Media Page" Click="MediaPageButton_Click"/>
+            </StackPanel>
+        </Viewbox>
+        </Grid>
     </Grid>
 </Page>

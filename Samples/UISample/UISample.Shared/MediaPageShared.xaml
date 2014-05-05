@@ -5,54 +5,304 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:Model="using:UISample.Model"
+    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity" xmlns:Behaviors="using:Microsoft.UniversalApps.Behaviors"
     x:Class="UISample.MediaPageShared"
     mc:Ignorable="d">
 
+	<Interactivity:Interaction.Behaviors>
+		<Behaviors:PlatformOrientationStateBehavior/>
+	</Interactivity:Interaction.Behaviors>
+
 	<Grid x:Name="LayoutRoot" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+		<VisualStateManager.VisualStateGroups>
+			<VisualStateGroup x:Name="LayoutStates">
+				<VisualState x:Name="WindowsLandscape"/>
+				<VisualState x:Name="WindowsPortrait">
+					<Storyboard>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Grid.ColumnSpan)" Storyboard.TargetName="TrackContainer">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<x:Int32>1</x:Int32>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Grid.Column)" Storyboard.TargetName="TrackContainer">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<x:Int32>2</x:Int32>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Grid.Row)" Storyboard.TargetName="PlaylistContainer">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<x:Int32>1</x:Int32>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Grid.Column)" Storyboard.TargetName="PlaylistContainer">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<x:Int32>1</x:Int32>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Grid.RowSpan)" Storyboard.TargetName="PlaylistContainer">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<x:Int32>2</x:Int32>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Grid.Row)" Storyboard.TargetName="TrackContainer">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<x:Int32>1</x:Int32>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Grid.RowSpan)" Storyboard.TargetName="TrackContainer">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<x:Int32>2</x:Int32>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Grid.Row)" Storyboard.TargetName="Player">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<x:Int32>0</x:Int32>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Grid.RowSpan)" Storyboard.TargetName="Player">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<x:Int32>1</x:Int32>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+					</Storyboard>
+				</VisualState>
+				<VisualState x:Name="WindowsPhoneLandscape">
+					<Storyboard>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="PlaylistContainer">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<Visibility>Collapsed</Visibility>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="TrackContainer">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<Visibility>Collapsed</Visibility>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Grid.RowSpan)" Storyboard.TargetName="Player">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<x:Int32>3</x:Int32>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+					</Storyboard>
+				</VisualState>
+				<VisualState x:Name="WindowsPhonePortrait">
+					<Storyboard>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="PlaylistContainer">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<Visibility>Collapsed</Visibility>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Grid.RowSpan)" Storyboard.TargetName="Player">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<x:Int32>1</x:Int32>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Grid.Row)" Storyboard.TargetName="TrackContainer">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<x:Int32>1</x:Int32>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Grid.RowSpan)" Storyboard.TargetName="TrackContainer">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<x:Int32>2</x:Int32>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Control.FontFamily)" Storyboard.TargetName="TrackListView">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<FontFamily>Global User Interface</FontFamily>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Margin)" Storyboard.TargetName="PlayerControls">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<Thickness>20,0,20,20</Thickness>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+					</Storyboard>
+				</VisualState>
+			</VisualStateGroup>
+		</VisualStateManager.VisualStateGroups>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="455*"/>
-			<RowDefinition Height="313*"/>
+			<RowDefinition Height="40*"/>
+			<RowDefinition Height="30*"/>
+			<RowDefinition Height="30*"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="142*"/>
-			<ColumnDefinition Width="541*"/>
+			<ColumnDefinition Width="Auto"/>
+			<ColumnDefinition Width="50*"/>
+			<ColumnDefinition Width="50*"/>
 		</Grid.ColumnDefinitions>
-		<Grid x:Name="Playlists" Grid.RowSpan="2">
+		<Grid x:Name="PlaylistContainer" Grid.RowSpan="3" MinWidth="180">
 			<ListView x:Name="PlayListView" ItemTemplate="{StaticResource IconListItem}">
-				<Model:ListSampleItem Icon="AllApps" Title="Playlist 1"/>
-				<Model:ListSampleItem Icon="AllApps" Title="My Favs"/>
-				<Model:ListSampleItem Icon="AllApps" Title="Work Tunez"/>
-				<Model:ListSampleItem Icon="AllApps" Title="Jogging"/>
-				<Model:ListSampleItem Icon="AllApps" Title="Playist 2"/>
-				<Model:ListSampleItem Icon="AllApps" Title="Hiking"/>
-				<Model:ListSampleItem Icon="AllApps" Title="On The Go"/>
-				<Model:ListSampleItem Icon="AllApps" Title="Fast Paced"/>
-				<Model:ListSampleItem Icon="AllApps" Title="For Gaming"/>
-				<Model:ListSampleItem Icon="AllApps" Title="Upbeat"/>
-				<Model:ListSampleItem Icon="AllApps" Title="Chill"/>
-				<Model:ListSampleItem Icon="AllApps" Title="Dub"/>
-				<Model:ListSampleItem Icon="AllApps" Title="Jam"/>
-				<Model:ListSampleItem Icon="AllApps" Title="Top Electronic"/>
-				<Model:ListSampleItem Icon="AllApps" Title="Random Stuff"/>
-				<Model:ListSampleItem Icon="AllApps" Title="Fast"/>
-				<Model:ListSampleItem Icon="AllApps" Title="Fun"/>
-				<Model:ListSampleItem Icon="AllApps" Title="Holiday"/>
-				<Model:ListSampleItem Icon="AllApps" Title="On the Town"/>
+				<Model:ListSampleItem Title="Playlist 1">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="My Favs">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Work Tunez">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Jogging">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Playist 2">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Hiking">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="On The Go">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Fast Paced">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="For Gaming">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Upbeat">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Chill">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Dub">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Jam">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Top Electronic">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Random Stuff">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Fast">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Fun">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Holiday">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="On the Town">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="AllApps"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
 			</ListView>
 		</Grid>
-		<Grid x:Name="Tracks" Grid.Row="1" Grid.Column="1">
-			<ListView x:Name="PlayListView1" ItemTemplate="{StaticResource IconListItem}" RequestedTheme="Light" Background="{ThemeResource ListBoxBackgroundThemeBrush}">
-				<Model:ListSampleItem Icon="Audio" Title="Time Is Running Out"/>
-				<Model:ListSampleItem Icon="Audio" Title="Take Your Place"/>
-				<Model:ListSampleItem Icon="Audio" Title="Remember Me"/>
-				<Model:ListSampleItem Icon="Audio" Title="Never Too Late"/>
-				<Model:ListSampleItem Icon="Audio" Title="Lights"/>
-				<Model:ListSampleItem Icon="Audio" Title="Again And Again"/>
+		<Grid x:Name="TrackContainer" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Background="White">
+			<ListView x:Name="TrackListView" ItemTemplate="{StaticResource IconListItem}" RequestedTheme="Light">
+				<Model:ListSampleItem Title="Time Is Running Out">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="Audio"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Take Your Place">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="Audio"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Remember Me">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="Audio"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Never Too Late">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="Audio"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Lights">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="Audio"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
+				<Model:ListSampleItem Title="Again And Again">
+					<Model:ListSampleItem.Icon>
+						<SymbolIcon Symbol="Audio"/>
+					</Model:ListSampleItem.Icon>
+				</Model:ListSampleItem>
 			</ListView>
 		</Grid>
-		<Grid x:Name="Player" Grid.Column="1" Background="Black">
-			<Viewbox Margin="100,0,100,20" VerticalAlignment="Bottom">
-				<Grid x:Name="PlayerControls" Height="100" Width="500">
+		<Grid x:Name="Player" Grid.Column="1" Background="Black" Grid.ColumnSpan="2" Grid.RowSpan="2">
+			<Viewbox x:Name="PlayerControls" Margin="100,0,100,20" VerticalAlignment="Bottom">
+				<Grid Height="100" Width="500">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="20*"/>
 						<ColumnDefinition Width="20*"/>

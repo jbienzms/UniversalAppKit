@@ -19,9 +19,9 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <ProjectReference Include="..\..\..\Libs\Microsoft.UniversalApps.Xaml\Microsoft.UniversalApps.Xaml.csproj">
+    <ProjectReference Include="..\..\..\Libs\Microsoft.UniversalApps.Xaml\Microsoft.UniversalApps.Xaml.Win.csproj">
       <Project>{ca2bf6a5-8465-411c-8d32-4b1457d4998c}</Project>
-      <Name>Microsoft.UniversalApps.Xaml</Name>
+      <Name>Microsoft.UniversalApps.Xaml.Win</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

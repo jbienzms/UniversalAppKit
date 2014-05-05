@@ -39,15 +39,15 @@
     <Content Include="Assets\WideLogo.scale-240.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Libs\Microsoft.UniversalApps.Xaml\Microsoft.UniversalApps.Xaml.csproj">
-      <Project>{ca2bf6a5-8465-411c-8d32-4b1457d4998c}</Project>
-      <Name>Microsoft.UniversalApps.Xaml</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <SDKReference Include="BehaviorsXamlSDKManaged, Version=12.0">
       <Name>Behaviors SDK %28XAML%29</Name>
     </SDKReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Libs\Microsoft.UniversalApps.Xaml\Microsoft.UniversalApps.Xaml.Phone.csproj">
+      <Project>{f277b02d-a14b-4b3d-91dd-02323d8a4485}</Project>
+      <Name>Microsoft.UniversalApps.Xaml.Phone</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
