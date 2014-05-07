@@ -32,9 +32,70 @@ using Windows.UI.Xaml.Controls;
 namespace Microsoft.UniversalApps.Behaviors
 {
     /// <summary>
+    /// Provides data for events about visual states.
+    /// </summary>
+    public class VisualStateEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Iniatializes a new <see cref="VisualStateEventArgs"/> instance.
+        /// </summary>
+        /// <param name="stateName">
+        /// The name of the current visual state.
+        /// </param>
+        /// <param name="useTransitions">
+        /// <c>true</c> if transitions should be used; otherwise <c>false</c>.
+        /// </param>
+        /// <param name="forceUpdate">
+        /// <c>true</c> if the state should be updated even if the state name has not changed; otherwise <c>false</c>.
+        /// </param>
+        public VisualStateEventArgs(string stateName, bool useTransitions, bool forceUpdate)
+        {
+            // Validate
+            if (string.IsNullOrEmpty(stateName)) throw new ArgumentException("stateName");
+
+            // Store
+            this.ForceUpdate = forceUpdate;
+            this.StateName = stateName;
+            this.UseTransitions = useTransitions;
+        }
+
+        /// <summary>
+        /// Gets or sets a value that indicates if the state should be updated even if the state name has not changed.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if the state should be updated even if the state name has not changed; otherwise <c>false</c>.
+        /// </value>
+        public bool ForceUpdate { get; private set; }
+
+        /// <summary>
+        /// Gets the name of the visual state.
+        /// </summary>
+        public string StateName { get; private set;}
+
+        /// <summary>
+        /// Gets a value that indicates if transitions should be used.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if transitions should be used; otherwise <c>false</c>.
+        /// </value>
+        public bool UseTransitions { get; private set; }
+    }
+
+    /// <summary>
+    /// The interface for a class that provides visual state change notifications.
+    /// </summary>
+    public interface INotifyVisualStateChanged
+    {
+        /// <summary>
+        /// Raised when the value of the current visual state changes.
+        /// </summary>
+        event EventHandler<VisualStateEventArgs> VisualStateChanged;
+    }
+
+    /// <summary>
     /// A behavior that calculates and applies visual states.
     /// </summary>
-    public abstract class VisualStateBehavior : Behavior<Control>
+    public abstract class VisualStateBehavior : Behavior<Control>, INotifyVisualStateChanged
     {
         #region Static Version
         #region Dependency Property Definitions
@@ -44,9 +105,9 @@ namespace Microsoft.UniversalApps.Behaviors
         static public readonly DependencyProperty StateNamePrefixProperty = DependencyProperty.Register("StateNamePrefix", typeof(string), typeof(OrientationStateBehavior), new PropertyMetadata("", (d, e) => { ((LayoutStateBehavior)d).ApplyState(false); }));
 
         /// <summary>
-        /// Identifies the <see cref="UseAnimations"/> dependency property.
+        /// Identifies the <see cref="UseTransitions"/> dependency property.
         /// </summary>
-        static public readonly DependencyProperty UseAnimationsProperty = DependencyProperty.Register("UseAnimations", typeof(bool), typeof(PlatformOrientationStateBehavior), new PropertyMetadata(false));
+        static public readonly DependencyProperty UseTransitionsProperty = DependencyProperty.Register("UseTransitions", typeof(bool), typeof(PlatformOrientationStateBehavior), new PropertyMetadata(false));
         #endregion // Dependency Property Definitions
         #endregion // Static Version
 
@@ -54,6 +115,42 @@ namespace Microsoft.UniversalApps.Behaviors
         #region Member Variables
         private string lastStateName;
         #endregion // Member Variables
+
+        /// <summary>
+        /// Applies a visual state.
+        /// </summary>
+        /// <param name="stateName">
+        /// The name of the state to apply.
+        /// </param>
+        /// <param name="useTransitions">
+        /// <c>true</c> to use transitions; otherwise <c>false</c>.
+        /// </param>
+        /// <param name="forceUpdate">
+        /// <c>true</c> if an updated should be forced; otherwise <c>false</c>. If false 
+        /// VisualStateManager.GoToState will not be called if the calculated state name is 
+        /// unchanged from the last time it was calculated.
+        /// </param>
+        protected void ApplyState(string stateName, bool useTransitions, bool forceUpdate)
+        {
+            // If it has changed (or we're forcing the update) apply
+            if (lastStateName != stateName)
+            {
+                // Calculate the state name with prefix
+                var preStateName = StateNamePrefix + stateName;
+
+                // Change it
+                VisualStateManager.GoToState(AssociatedObject, preStateName, useTransitions);
+
+                // Notify
+                if (VisualStateChanged != null)
+                {
+                    VisualStateChanged(this, new VisualStateEventArgs(stateName, useTransitions, forceUpdate));
+                }
+            }
+
+            // Update last state name
+            lastStateName = stateName;
+        }
 
         #region Overrides / Event Handlers
         /// <summary>
@@ -118,16 +215,11 @@ namespace Microsoft.UniversalApps.Behaviors
                 var bounds = (Window.Current != null ? Window.Current.Bounds : Rect.Empty);
 
                 // Calculate the state name
-                stateName = StateNamePrefix + CalculateStateName();
+                // TODO: Pass in bounds, etc.
+                stateName = CalculateStateName();
 
-                // If it has changed (or we're forcing the update) apply
-                if (lastStateName != stateName)
-                {
-                    VisualStateManager.GoToState(AssociatedObject, stateName, UseAnimations);
-                }
-
-                // Update last state name
-                lastStateName = stateName;
+                // Apply
+                ApplyState(stateName, UseTransitions, forceUpdate);
             }
             catch (Exception ex)
             {
@@ -161,18 +253,26 @@ namespace Microsoft.UniversalApps.Behaviors
         /// <value>
         /// <c>true</c> if animations should be used during state changes; otherwise <c>false</c>.
         /// </value>
-        public bool UseAnimations
+        public bool UseTransitions
         {
             get
             {
-                return (bool)GetValue(UseAnimationsProperty);
+                return (bool)GetValue(UseTransitionsProperty);
             }
             set
             {
-                SetValue(UseAnimationsProperty, value);
+                SetValue(UseTransitionsProperty, value);
             }
         }
         #endregion // Public Properties
+
+        #region Public Events
+        /// <summary>
+        /// Raised when the value of the current visual state changes.
+        /// </summary>
+        public event EventHandler<VisualStateEventArgs> VisualStateChanged;
+        #endregion // Public Events
+
         #endregion // Instance Version
     }
 }

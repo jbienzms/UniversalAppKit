@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Behaviors\Behavior.cs" />
     <Compile Include="Behaviors\LayoutStateBehavior.cs" />
+    <Compile Include="Behaviors\LinkedStateBehavior.cs" />
     <Compile Include="Behaviors\OrientationStateBehavior.cs" />
     <Compile Include="Behaviors\PlatformOrientationStateBehavior.cs" />
     <Compile Include="Behaviors\PlatformStateBehavior.cs" />

@@ -20,117 +20,111 @@
  * (F) Platform Limitation- The licenses granted in sections 2(A) & 2(B) extend only to the software or derivative works that you create that run on a Microsoft Windows operating system product.
  ******************************************************************************/
 #endregion // License
+using Microsoft.Xaml.Interactivity;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 
 namespace Microsoft.UniversalApps.Behaviors
 {
     /// <summary>
-    /// A behavior that calculates and applies visual states when layout changes.
+    /// A behavior that inheirts visual state changes from a higher source in the visual tree.
     /// </summary>
     /// <remarks>
-    /// The functionality in this and derived behaviors is based loosely on a talk by Peter Torr from the 
-    /// //build 2014 conference titled <see cref="http://channel9.msdn.com/Events/Build/2014/3-541">
-    /// From 4 to 40 inches: Developing Windows Applications across Multiple Form Factors</see>.
+    /// This behavior allows controls that are nested deep in the user interface to respond 
+    /// to visual state changes at a higher level (for example on the page).
     /// 
-    /// Key concepts include:
-    /// 
-    /// <list type="table">
-    /// <listheader>
-    /// <term>Term</term>
-    /// <description>Description</description>
-    /// </listheader>
-    /// <item>
-    /// <term>
-    /// Effective Resolution
-    /// </term>
-    /// <description>
-    /// A virtual resolution system that takes viewing distance into account. In this system a 4" phone 
-    /// held at 1' has the same Effective Resolution as a 40" TV viewed at 10'. This topic is discussed 
-    /// at 6:40 in the video.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <term>
-    /// Detail Level
-    /// </term>
-    /// <description>
-    /// A method for determining the amount of information to display based on space available. This topic is discussed at 25:15 in the video. 
-    /// </description>
-    /// </item>
-    /// </list>
-    /// 
-    /// Visual States proposed by Peter incldued: 
-    /// <list type="table">
-    /// <listheader>
-    /// <term>State</term>
-    /// <description>Usage</description>
-    /// </listheader>
-    /// <item>
-    /// <term>Wide</term>
-    /// <description>
-    /// Traditionally thought of as 'landscape', this state implies that the window is wider than it is tall. 
-    /// In the sample project, a minimum width of 1200 Effective Pixels trigered this state.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <term>Square</term>
-    /// <description>
-    /// This state implies that the window has roughly equal width and height. 
-    /// In the sample project, a minimum width of 700 Effective Pixels trigered this state.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <term>Thin</term>
-    /// <description>
-    /// Traditionally thought of as 'portrait', this state implies that the window is taller than it is wide. 
-    /// In the sample project, a minimum width of 400 Effective Pixels trigered this state.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <term>Rail</term>
-    /// <description>
-    /// Formerly thought of as 'snapped', this state implies that the window is significantly taller than it is wide. 
-    /// In the sample project, anything less than 400 Effective Pixels would triger this state.
-    /// </description>
-    /// </item>
-    /// </list>
+    /// When this behavior is attached it walks up the visual tree looking for a behavior that 
+    /// implements <see cref="INotifyVisualStateChanged"/>. If found, it subscribes to the 
+    /// <see cref="INotifyVisualStateChanged.VisualStateChanged">VisualStateChanged</see> event 
+    /// and updates the state of the attached object any time the parent state is changed.
     /// </remarks>
-    public abstract class LayoutStateBehavior : VisualStateBehavior
+    public class LinkedStateBehavior : VisualStateBehavior
     {
-        // TODO: Get code from http://aka.ms/WpSLLarge
+        #region Static Version
+        #region Internal Methods
+        /// <summary>
+        /// Attempts to find a visual state change provider in the parent tree.
+        /// </summary>
+        /// <param name="obj">
+        /// The object to begin searching in.
+        /// </param>
+        /// <returns>
+        /// The provider, if found; otherwise <see langword="null"/>.
+        /// </returns>
+        static private INotifyVisualStateChanged FindParentStateProvider(DependencyObject obj)
+        {
+            // See if this one has it
+            var chg = (from b in Interaction.GetBehaviors(obj)
+                       where b is INotifyVisualStateChanged
+                       select b as INotifyVisualStateChanged).FirstOrDefault();
+
+            // If found, return it
+            if (chg != null) { return chg; }
+
+            // Not found. Try parent?
+            var fe = obj as FrameworkElement;
+            if ((fe != null) && (fe.Parent != null))
+            {
+                return FindParentStateProvider(fe.Parent);
+            }
+
+            // Not found
+            return null;
+        }
+        #endregion // Internal Methods
+        #endregion // Static Version
+
+        #region Instance Version
+        #region Member Variables
+        private string currentStateName = "";
+        private INotifyVisualStateChanged stateProvider;
+        #endregion // Member Variables
 
         #region Overrides / Event Handlers
-        /// <summary>
-        /// Occurs when the behavior is attached.
-        /// </summary>
         protected override void OnAttached()
         {
-            // Pass to base first
             base.OnAttached();
 
-            // Handle size changed
-            AssociatedObject.SizeChanged += OnAttachedSizeChanged;
-        }
+            // Find provider
+            if (AssociatedObject.Parent != null)
+            {
+                stateProvider = FindParentStateProvider(AssociatedObject.Parent);
 
-        protected virtual void OnAttachedSizeChanged(object sender, RoutedEventArgs e)
-        {
-            // Make sure applied
-            ApplyState(false);
+                // If found, subscribe to events
+                if (stateProvider != null)
+                {
+                    stateProvider.VisualStateChanged += StateProvider_VisualStateChanged;
+                }
+            }
         }
 
         protected override void OnDetaching()
         {
-            // Pass to base first
+            if (stateProvider != null)
+            {
+                stateProvider.VisualStateChanged -= StateProvider_VisualStateChanged;
+            }
             base.OnDetaching();
+        }
 
-            // Unsubscribe so we can release
-            AssociatedObject.SizeChanged -= OnAttachedSizeChanged;
+        private void StateProvider_VisualStateChanged(object sender, VisualStateEventArgs e)
+        {
+            // Store in case public version of Apply is called
+            currentStateName = e.StateName;
+
+            // Apply using shortcut version
+            ApplyState(CalculateStateName(), e.UseTransitions, e.ForceUpdate);
+        }
+
+        protected override string CalculateStateName()
+        {
+            return StateNamePrefix + currentStateName;
         }
         #endregion // Overrides / Event Handlers
+        #endregion // Instance Version
     }
 }
