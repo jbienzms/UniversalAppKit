@@ -24,11 +24,57 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using Windows.Foundation;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace Microsoft.UniversalApps.Behaviors
 {
+    public class LayoutStateCalculatingEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Initializes a new <see cref="LayoutStateCalculatingEventArgs"/> instance.
+        /// </summary>
+        public LayoutStateCalculatingEventArgs(LayoutState layout)
+        {
+            // Validate
+            if (layout == null) throw new ArgumentNullException("layout");
+
+            // Store
+            this.Layout = layout;
+
+            // Default values
+            StateName = string.Empty; 
+        }
+
+        /// <summary>
+        /// Gets or sets a value that indicates if the state calculation should be canceled.
+        /// </summary>
+        /// <remarks>
+        /// <c>true</c> if calculation should be canceled; otherwise <c>false</c>.
+        /// </remarks>
+        public bool IsCanceled { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that indicates if one of the event subscribers has handled the event.
+        /// </summary>
+        /// <remarks>
+        /// <c>true</c> if one of the event subscribers has handled the event; otherwise <c>false</c>.
+        /// </remarks>
+        public bool IsHandled { get; set; }
+
+        /// <summary>
+        /// Gets information about the current layout state.
+        /// </summary>
+        public LayoutState Layout { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the state name calculated by the event subscriber.
+        /// </summary>
+        public string StateName { get; set; }
+    }
+
     /// <summary>
     /// A behavior that calculates and applies visual states when layout changes.
     /// </summary>
@@ -104,7 +150,68 @@ namespace Microsoft.UniversalApps.Behaviors
     {
         // TODO: Get code from http://aka.ms/WpSLLarge
 
+        #region Overridables / Event Triggers
+        /// <summary>
+        /// Attempts to calculate the state name for the associated object.
+        /// </summary>
+        /// <param name="layout">
+        /// A <see cref="LayoutState"/> instance that provides information about the layout 
+        /// of the application.
+        /// </param>
+        /// <param name="stateName">
+        /// If successful, the calculated state name; otherwise <see langword="null"/>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the state name could be calculated; otherwise <c>false</c>.
+        /// </returns>
+        protected abstract bool TryCalculateStateName(LayoutState layout, out string stateName);
+        #endregion // Overridables / Event Triggers
+
         #region Overrides / Event Handlers
+        protected override bool TryCalculateStateName(out string stateName)
+        {
+            try
+            {
+                // TODO: Get args
+                var view = ApplicationView.GetForCurrentView();
+                var bounds = (Window.Current != null ? Window.Current.Bounds : Rect.Empty);
+                LayoutState layout = new LayoutState();
+
+                // See if we have event subscribers first
+                if (LayoutStateCalculating != null)
+                {
+                    // Wrap in event args
+                    var e = new LayoutStateCalculatingEventArgs(layout);
+
+                    // Raise the event
+                    LayoutStateCalculating(this, e);
+
+                    // If the calculation was canceled, bail
+                    if (e.IsCanceled)
+                    {
+                        stateName = null;
+                        return false;
+                    }
+
+                    // If the calculation was handled, process
+                    if (e.IsHandled)
+                    {
+                        stateName = e.StateName;
+                        return true;
+                    }
+                }
+
+                // No subscribers or none handled it. Pass to override.
+                return TryCalculateStateName(layout, out stateName);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Could not calculate state name. {0}", ex.Message);
+                stateName = null;
+                return false;
+            }
+        }
+
         /// <summary>
         /// Occurs when the behavior is attached.
         /// </summary>
@@ -120,7 +227,7 @@ namespace Microsoft.UniversalApps.Behaviors
         protected virtual void OnAttachedSizeChanged(object sender, RoutedEventArgs e)
         {
             // Make sure applied
-            ApplyState(false);
+            UpdateState(false);
         }
 
         protected override void OnDetaching()
@@ -132,5 +239,12 @@ namespace Microsoft.UniversalApps.Behaviors
             AssociatedObject.SizeChanged -= OnAttachedSizeChanged;
         }
         #endregion // Overrides / Event Handlers
+
+        #region Public Events
+        /// <summary>
+        /// Raised when the state name is being calculated due to a layout change.
+        /// </summary>
+        public event EventHandler<LayoutStateCalculatingEventArgs> LayoutStateCalculating;
+        #endregion // Public Events
     }
 }

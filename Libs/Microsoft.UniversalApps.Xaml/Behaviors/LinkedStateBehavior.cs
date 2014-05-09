@@ -40,7 +40,7 @@ namespace Microsoft.UniversalApps.Behaviors
     /// When this behavior is attached it walks up the visual tree looking for a behavior that 
     /// implements <see cref="INotifyVisualStateChanged"/>. If found, it subscribes to the 
     /// <see cref="INotifyVisualStateChanged.VisualStateChanged">VisualStateChanged</see> event 
-    /// and updates the state of the attached object any time the parent state is changed.
+    /// and updates the state of the attached object any time the parent state changes.
     /// </remarks>
     public class LinkedStateBehavior : VisualStateBehavior
     {
@@ -117,12 +117,22 @@ namespace Microsoft.UniversalApps.Behaviors
             currentStateName = e.StateName;
 
             // Apply using shortcut version
-            ApplyState(CalculateStateName(), e.UseTransitions, e.ForceUpdate);
+            ApplyState(currentStateName, e.UseTransitions, e.ForceUpdate);
         }
 
-        protected override string CalculateStateName()
+        protected override bool TryCalculateStateName(out string stateName)
         {
-            return StateNamePrefix + currentStateName;
+            if (!string.IsNullOrEmpty(currentStateName))
+            {
+                stateName = currentStateName;
+                return true;
+            }
+            else
+            {
+                stateName = null;
+                return false;
+            }
+            
         }
         #endregion // Overrides / Event Handlers
         #endregion // Instance Version

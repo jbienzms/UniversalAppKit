@@ -22,103 +22,15 @@
 #endregion // License
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
+using System.Threading.Tasks;
 
-namespace Microsoft.UniversalApps.Behaviors
+namespace Microsoft.UniversalApps
 {
-    /// <summary>
-    /// A behavior that switches visual state based on the current platform and orientation of the layout.
-    /// </summary>
-    /// <remarks>
-    /// Use of this behavior is strongly discouraged because interface decisions should generally not be based 
-    /// on the platform the app is running on. There are a few places where this behavior may still be valuable, 
-    /// for example showing or hiding placeholder containers for platform-specific controls. 
-    /// 
-    /// Consider using <see cref="OrientationStateBehavior"/>, <see cref="LayoutRulesStateBehavior"/>, or 
-    /// implementing your own behavior based on <see cref="LayoutStateBehavior"/>.
-    /// 
-    /// <list type="table">
-    /// <listheader>
-    /// <term>State Name</term>
-    /// <description>Description</description>
-    /// </listheader>
-    /// <item>
-    /// <term>
-    /// WindowsLandscape
-    /// </term>
-    /// <description>
-    /// The device is a Windows PC and layout is wider than it is tall.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <term>
-    /// WindowsPortrait
-    /// </term>
-    /// <description>
-    /// The device is a Windows PC and layout is taller than it is wide.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <term>
-    /// WindowsSquare
-    /// </term>
-    /// <description>
-    /// The device is a Windows Phone and layout is as wide as it is tall (or is within the SquareThreshold).
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <term>
-    /// WindowsPhoneLandscape
-    /// </term>
-    /// <description>
-    /// The device is a Windows Phone and layout is wider than it is tall.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <term>
-    /// WindowsPhonePortrait
-    /// </term>
-    /// <description>
-    /// The device is a Windows Phone and layout is taller than it is wide.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <term>
-    /// WindowsPhoneSquare
-    /// </term>
-    /// <description>
-    /// The device is a Windows Phone and layout is as wide as it is tall (or is within the SquareThreshold).
-    /// </description>
-    /// </item>
-    /// </list>
-    public class PlatformOrientationStateBehavior : OrientationStateBehavior
+    public class LayoutState
     {
-        #region Constants
-        private const string WindowsPhoneName = "WindowsPhone";
-        private const string WindowsName = "Windows";
-        #endregion // Constants
-
-        protected override bool TryCalculateStateName(LayoutState layout, out string stateName)
-        {
-            // Let base do most of the work
-            if (base.TryCalculateStateName(layout, out stateName))
-            {
-                // Add platform name to it
-                #if WINDOWS_PHONE_APP
-                    stateName = WindowsPhoneName + stateName;
-                #else
-                    stateName = WindowsName + stateName;
-                #endif
-
-                // Success!
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        public double ActualWidth { get; set; }
+        public double ActualHeight { get; set; }
     }
 }

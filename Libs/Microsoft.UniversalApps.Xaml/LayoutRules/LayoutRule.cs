@@ -20,105 +20,65 @@
  * (F) Platform Limitation- The licenses granted in sections 2(A) & 2(B) extend only to the software or derivative works that you create that run on a Microsoft Windows operating system product.
  ******************************************************************************/
 #endregion // License
+using Microsoft.UniversalApps.Behaviors;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 
-namespace Microsoft.UniversalApps.Behaviors
+namespace Microsoft.UniversalApps.LayoutRules
 {
     /// <summary>
-    /// A behavior that switches visual state based on the current platform and orientation of the layout.
+    /// Defines the interface for a rule that can provide a state name based on a layout.
     /// </summary>
-    /// <remarks>
-    /// Use of this behavior is strongly discouraged because interface decisions should generally not be based 
-    /// on the platform the app is running on. There are a few places where this behavior may still be valuable, 
-    /// for example showing or hiding placeholder containers for platform-specific controls. 
-    /// 
-    /// Consider using <see cref="OrientationStateBehavior"/>, <see cref="LayoutRulesStateBehavior"/>, or 
-    /// implementing your own behavior based on <see cref="LayoutStateBehavior"/>.
-    /// 
-    /// <list type="table">
-    /// <listheader>
-    /// <term>State Name</term>
-    /// <description>Description</description>
-    /// </listheader>
-    /// <item>
-    /// <term>
-    /// WindowsLandscape
-    /// </term>
-    /// <description>
-    /// The device is a Windows PC and layout is wider than it is tall.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <term>
-    /// WindowsPortrait
-    /// </term>
-    /// <description>
-    /// The device is a Windows PC and layout is taller than it is wide.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <term>
-    /// WindowsSquare
-    /// </term>
-    /// <description>
-    /// The device is a Windows Phone and layout is as wide as it is tall (or is within the SquareThreshold).
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <term>
-    /// WindowsPhoneLandscape
-    /// </term>
-    /// <description>
-    /// The device is a Windows Phone and layout is wider than it is tall.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <term>
-    /// WindowsPhonePortrait
-    /// </term>
-    /// <description>
-    /// The device is a Windows Phone and layout is taller than it is wide.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <term>
-    /// WindowsPhoneSquare
-    /// </term>
-    /// <description>
-    /// The device is a Windows Phone and layout is as wide as it is tall (or is within the SquareThreshold).
-    /// </description>
-    /// </item>
-    /// </list>
-    public class PlatformOrientationStateBehavior : OrientationStateBehavior
+    public interface ILayoutRule
     {
-        #region Constants
-        private const string WindowsPhoneName = "WindowsPhone";
-        private const string WindowsName = "Windows";
-        #endregion // Constants
+        #region Public Methods
+        /// <summary>
+        /// Determines if the rule applies to the specified layout.
+        /// </summary>
+        /// <param name="layout">
+        /// The <see cref="LayoutState"/> instance to test.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the rule applies to the specified layout; otherwise <c>false</c>.
+        /// </returns>
+        bool Applies(LayoutState layout);
+        #endregion // Public Methods
 
-        protected override bool TryCalculateStateName(LayoutState layout, out string stateName)
-        {
-            // Let base do most of the work
-            if (base.TryCalculateStateName(layout, out stateName))
-            {
-                // Add platform name to it
-                #if WINDOWS_PHONE_APP
-                    stateName = WindowsPhoneName + stateName;
-                #else
-                    stateName = WindowsName + stateName;
-                #endif
+        #region Public Properties
+        /// <summary>
+        /// Gets the name of the state that should be set if the rule applies.
+        /// </summary>
+        string StateName { get; }
+        #endregion // Public Properties
+    }
 
-                // Success!
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+    /// <summary>
+    /// Provides a base class for a rule that can provide a state name based on a layout.
+    /// </summary>
+    public abstract class LayoutRule : ILayoutRule
+    {
+        #region Public Methods
+        /// <summary>
+        /// Determines if the rule applies to the specified layout.
+        /// </summary>
+        /// <param name="layout">
+        /// The <see cref="LayoutState"/> instance to test.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the rule applies to the specified layout; otherwise <c>false</c>.
+        /// </returns>
+        public abstract bool Applies(LayoutState layout);
+        #endregion // Public Methods
+
+        #region Public Properties
+        /// <summary>
+        /// Gets or sets the name of the state that should be set if the rule applies.
+        /// </summary>
+        public string StateName { get; set; }
+        #endregion // Public Properties
     }
 }

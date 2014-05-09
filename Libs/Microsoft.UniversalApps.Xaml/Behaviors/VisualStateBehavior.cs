@@ -93,8 +93,13 @@ namespace Microsoft.UniversalApps.Behaviors
     }
 
     /// <summary>
-    /// A behavior that calculates and applies visual states.
+    /// Provides a base class for a behavior that can calculate and apply visual states.
     /// </summary>
+    /// <remarks>
+    /// This class is abstract because it does not actually perform calculations. Behaviors 
+    /// can inherit from this class to simplify the creation of new behaviors that modify 
+    /// visual states.
+    /// </remarks>
     public abstract class VisualStateBehavior : Behavior<Control>, INotifyVisualStateChanged
     {
         #region Static Version
@@ -102,7 +107,7 @@ namespace Microsoft.UniversalApps.Behaviors
         /// <summary>
         /// Identifies the <see cref="StateNamePrefix"/> dependency property.
         /// </summary>
-        static public readonly DependencyProperty StateNamePrefixProperty = DependencyProperty.Register("StateNamePrefix", typeof(string), typeof(OrientationStateBehavior), new PropertyMetadata("", (d, e) => { ((LayoutStateBehavior)d).ApplyState(false); }));
+        static public readonly DependencyProperty StateNamePrefixProperty = DependencyProperty.Register("StateNamePrefix", typeof(string), typeof(OrientationStateBehavior), new PropertyMetadata("", (d, e) => { ((LayoutStateBehavior)d).UpdateState(false); }));
 
         /// <summary>
         /// Identifies the <see cref="UseTransitions"/> dependency property.
@@ -133,7 +138,7 @@ namespace Microsoft.UniversalApps.Behaviors
         protected void ApplyState(string stateName, bool useTransitions, bool forceUpdate)
         {
             // If it has changed (or we're forcing the update) apply
-            if (lastStateName != stateName)
+            if ((lastStateName != stateName) || (forceUpdate))
             {
                 // Calculate the state name with prefix
                 var preStateName = StateNamePrefix + stateName;
@@ -162,7 +167,7 @@ namespace Microsoft.UniversalApps.Behaviors
             base.OnAttached();
 
             // Attempt to apply now
-            ApplyState(true);
+            UpdateState(true);
 
             // Handle loaded in case the control isn't yet loaded
             AssociatedObject.Loaded += OnAttachedLoaded;
@@ -171,7 +176,7 @@ namespace Microsoft.UniversalApps.Behaviors
         protected virtual void OnAttachedLoaded(object sender, RoutedEventArgs e)
         {
             // Make sure applied
-            ApplyState(true);
+            UpdateState(true);
         }
 
         protected override void OnDetaching()
@@ -186,12 +191,15 @@ namespace Microsoft.UniversalApps.Behaviors
 
         #region Overridables / Event Triggers
         /// <summary>
-        /// Calculates the name of the current state for the associated object.
+        /// Attempts to calculate the state name for the associated object.
         /// </summary>
+        /// <param name="stateName">
+        /// If successful, the calculated state name; otherwise <see langword="null"/>.
+        /// </param>
         /// <returns>
-        /// The name of the current state for the associated object.
+        /// <c>true</c> if the state name could be calculated; otherwise <c>false</c>.
         /// </returns>
-        protected abstract string CalculateStateName();
+        protected abstract bool TryCalculateStateName(out string stateName);
         #endregion // Overridables / Event Triggers
 
         #region Public Methods
@@ -203,7 +211,7 @@ namespace Microsoft.UniversalApps.Behaviors
         /// VisualStateManager.GoToState will not be called if the calculated state name is 
         /// unchanged from the last time it was calculated.
         /// </param>
-        public void ApplyState(bool forceUpdate)
+        public void UpdateState(bool forceUpdate)
         {
             // Placeholder
             string stateName = null;
@@ -211,15 +219,12 @@ namespace Microsoft.UniversalApps.Behaviors
             // In case there is a problem caclulating the name
             try
             {
-                var view = ApplicationView.GetForCurrentView();
-                var bounds = (Window.Current != null ? Window.Current.Bounds : Rect.Empty);
-
-                // Calculate the state name
-                // TODO: Pass in bounds, etc.
-                stateName = CalculateStateName();
-
-                // Apply
-                ApplyState(stateName, UseTransitions, forceUpdate);
+                // Try to calculate the state name
+                if (TryCalculateStateName(out stateName))
+                {
+                    // Apply
+                    ApplyState(stateName, UseTransitions, forceUpdate);
+                }
             }
             catch (Exception ex)
             {

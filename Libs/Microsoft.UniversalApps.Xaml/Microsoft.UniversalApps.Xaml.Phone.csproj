@@ -46,11 +46,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Behaviors\Behavior.cs" />
+    <Compile Include="Behaviors\LayoutRulesStateBehavior.cs" />
     <Compile Include="Behaviors\LayoutStateBehavior.cs" />
+    <Compile Include="Behaviors\LinkedStateBehavior.cs" />
     <Compile Include="Behaviors\OrientationStateBehavior.cs" />
     <Compile Include="Behaviors\PlatformOrientationStateBehavior.cs" />
     <Compile Include="Behaviors\PlatformStateBehavior.cs" />
     <Compile Include="Behaviors\VisualStateBehavior.cs" />
+    <Compile Include="LayoutRules\And.cs" />
+    <Compile Include="LayoutRules\LayoutRule.cs" />
+    <Compile Include="LayoutRules\Or.cs" />
+    <Compile Include="LayoutState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

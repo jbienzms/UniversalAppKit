@@ -29,29 +29,99 @@ using Windows.UI.Xaml.Controls;
 namespace Microsoft.UniversalApps.Behaviors
 {
     /// <summary>
-    /// A behavior that switches the visual state based on the current orientation.
+    /// A behavior that switches visual state based on the orientation of the layout.
     /// </summary>
+    /// <remarks>
+    /// <list type="table">
+    /// <listheader>
+    /// <term>State Name</term>
+    /// <description>Description</description>
+    /// </listheader>
+    /// <item>
+    /// <term>
+    /// Landscape
+    /// </term>
+    /// <description>
+    /// The layout is wider than it is tall.
+    /// </description>
+    /// </item>
+    /// <item>
+    /// <term>
+    /// Portrait
+    /// </term>
+    /// <description>
+    /// The layout is taller than it is wide.
+    /// </description>
+    /// </item>
+    /// <item>
+    /// <term>
+    /// Square
+    /// </term>
+    /// <description>
+    /// The layout is as wide as it is tall (or is within the SquareThreshold).
+    /// </description>
+    /// </item>
+    /// </list>
+    /// </remarks>
     public class OrientationStateBehavior : LayoutStateBehavior
     {
         #region Constants
         private const string LandscapeStateName = "Landscape";
         private const string PortraitStateName = "Portrait";
+        private const string SquareStateName = "Square";
         #endregion // Constants
 
+        #region Dependency Property Definitions
+        /// <summary>
+        /// Identifies the <see cref="SquareThreshold"/> dependency property.
+        /// </summary>
+        static public readonly DependencyProperty SquareThresholdProperty = DependencyProperty.Register("SquareThreshold", typeof(double), typeof(OrientationStateBehavior), new PropertyMetadata(10d));
+        #endregion // Dependency Property Definitions
+
         #region Overrides / Event Handlers
-        protected override string CalculateStateName()
+        protected override bool TryCalculateStateName(LayoutState layout, out string stateName)
         {
-            return "";
-            // If width and height are the same, we'll use landscape
-            //if (AssociatedObject.ActualWidth >= AssociatedObject.ActualHeight)
-            //{
-            //    return LandscapeStateName;
-            //}
-            //else
-            //{
-            //    return PortraitStateName;
-            //}
+            // Figure out difference between width and height
+            var diff = Math.Abs(layout.ActualWidth - layout.ActualHeight);
+
+            // If it's within the square threshold, call it square
+            if (diff <= SquareThreshold)
+            {
+                stateName = SquareStateName;
+            }
+            // Wider than tall?
+            else if (layout.ActualWidth > layout.ActualHeight)
+            {
+                stateName = LandscapeStateName;
+            }
+            else
+            {
+                stateName = PortraitStateName;
+            }
+
+            // Success
+            return true;
         }
         #endregion // Overrides / Event Handlers
+
+        #region Public Properties
+        /// <summary>
+        /// Gets or sets the amount that width can vary from height and still be considered square. This is a dependency property.
+        /// </summary>
+        /// <value>
+        /// The amount that width can vary from height and still be considered square. The default is 10.
+        /// </value>
+        public double SquareThreshold
+        {
+            get
+            {
+                return (double)GetValue(SquareThresholdProperty);
+            }
+            set
+            {
+                SetValue(SquareThresholdProperty, value);
+            }
+        }
+        #endregion // Public Properties
     }
 }
